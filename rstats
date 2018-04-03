@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+
+"""rstats.
+
+Quick and dirty issue and pull request statistics for GitHub repos.
+
+Usage:
+  rstats issues --token-file=<f> [--labels=<l>] <org> <repo>
+  rstats prs --token-file=<f> [--labels=<l>] <org> <repo>
+  rstats (-h | --help)
+  rstats --version
+
+Options:
+  -h --help         Show this screen.
+  --version         Show version.
+  --token-file=<f>  Path to file containing GitHub API token.
+"""
+from docopt import docopt
+from github import Github
+
+import os
+
+
+def main():
+    args = docopt(__doc__, version='rstats 0.1')
+
+    token_file_path = args['--token-file']
+    org_name = args['<org>']
+    repo_name = args['<repo>']
+    flag_issues = args['issues']
+    flag_prs = args['prs']
+
+    with open(args['--token-file']) as token_file:
+        token = token_file.read().strip()
+    gh = Github(token)
+    org = gh.get_organization(org_name)
+    repo = org.get_repo(repo_name)
+    if flag_issues:
+        process_issues(repo)
+    if flag_prs:
+        process_prs(repo)
+
+
+def process_issues(repo):
+    print('processing issues for repo {}'.format(repo.name))
+
+
+def process_prs(repo):
+    print('processing PRs for repo {}'.format(repo.name))
+
+
+if __name__ == '__main__':
+    main()
